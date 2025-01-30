@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -12,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,16 +23,43 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.example.disneycharacters.domain.model.Data
+import com.example.disneycharacters.R
+import com.example.disneycharacters.domain.model.CharacterState
+import com.example.disneycharacters.domain.model.DisneyCharacterItem
 import com.example.disneycharacters.presentation.viewmodel.CharacterViewModel
 
 @Composable
 fun CharacterDetailsScreen(characterViewModel: CharacterViewModel) {
 
     val characterDataList by characterViewModel.characterDetails.collectAsState()
+    val characterState = characterViewModel.characterState.collectAsState()
 
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        when(characterState.value) {
+            is CharacterState.Loading -> {
+                CircularProgressIndicator()
+            }
+            is CharacterState.Success -> {
+                ShowCharacterList(characterDataList)
+            }
+            is CharacterState.Error -> {
+                ShowErrorText()
+            }
+        }
+    }
+}
+
+@Composable
+fun ShowCharacterList(characterDataList: List<DisneyCharacterItem>) {
     Column {
         LazyColumn(
             modifier = Modifier
@@ -38,10 +67,8 @@ fun CharacterDetailsScreen(characterViewModel: CharacterViewModel) {
                 .padding(16.dp)
                 .weight(1f)
         ) {
-            if (characterDataList.isNotEmpty()) {
-                items(characterDataList) {
-                    CharacterList(it)
-                }
+            items(characterDataList) {
+                CharacterList(it)
             }
         }
     }
@@ -56,14 +83,16 @@ fun ShowErrorText() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("The specified character details is not available. Please try another character",
-            style = MaterialTheme.typography.bodyMedium)
+        Text(
+            stringResource(R.string.no_character_match),
+            style = MaterialTheme.typography.bodyLarge
+        )
     }
 
 }
 
 @Composable
-fun CharacterList(characterDataItem: Data) {
+fun CharacterList(characterDataItem: DisneyCharacterItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -85,7 +114,7 @@ fun CharacterList(characterDataItem: Data) {
 }
 
 @Composable
-fun CharacterImage(characterDataItem: Data) {
+fun CharacterImage(characterDataItem: DisneyCharacterItem) {
     Image(
         painter = rememberAsyncImagePainter(characterDataItem.imageUrl),
         contentDescription = characterDataItem.name,

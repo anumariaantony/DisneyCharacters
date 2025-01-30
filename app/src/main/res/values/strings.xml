@@ -2,4 +2,5 @@
     <string name="app_name">Disney Character Search</string>
     <string name="character_name">Character Name</string>
     <string name="search">Search</string>
+    <string name="no_character_match">The specified character details is not available. Please try another character</string>
 </resources>

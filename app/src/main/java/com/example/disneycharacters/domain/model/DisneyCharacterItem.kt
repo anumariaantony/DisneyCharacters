@@ -1,6 +1,6 @@
 package com.example.disneycharacters.domain.model
 
-data class Data(
+data class DisneyCharacterItem(
     val __v: Int,
     val _id: Int,
     val allies: List<Any>,

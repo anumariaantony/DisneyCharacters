@@ -41,12 +41,12 @@ fun DisneyCharacterSearchApp() {
     val navController = rememberNavController()
     val characterViewModel = hiltViewModel<CharacterViewModel>()
     NavHost(navController = navController, startDestination = Screen.Search.toString()) {
-        composable(Screen.Search.route) {
+        composable(Screen.Search.toString()) {
             SearchScreen(onSearchButtonClicked = {
                 navController.navigate(Screen.Character.toString())
             }, characterViewModel)
         }
-        composable(Screen.Character.route) {
+        composable(Screen.Character.toString()) {
             CharacterDetailsScreen(characterViewModel)
         }
     }
